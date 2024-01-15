@@ -6,11 +6,15 @@ const PORT = 5000;
 
 import userRoutes from "./routers/users.js";
 import resetPassword from './routers/resetPassword.js'
+import messageRoutes from "./routers/message.js";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+
 app.use("/users", userRoutes);
 app.use('/password-reset',resetPassword)
+app.use('/messages',messageRoutes)
+
 
 app.listen(PORT, async (err) => {
   if (err) console.log(err);
