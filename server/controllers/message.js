@@ -1,14 +1,21 @@
 import Message from "../models/secretMessage.js";
 
 export const getMessages = async (req, res) => {
-  console.log(req);
+  try {
+    const secrets = await Message.find();
+    res.status(200).json(secrets);
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
+  }
 };
 
 export const createSecret = async (req, res) => {
   const secretmessage = req.body;
   try {
     const existingSecret = await Message.findOne({ creator: req.userId });
-    if(existingSecret) return res.json({message:"you have already posted a secret"})
+    if (existingSecret)
+      return res.json({ message: "you have already posted a secret" });
     const newMessage = await Message.create({
       ...secretmessage,
       creator: req.userId,

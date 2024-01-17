@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import connect from "./config/db.js";
+import cors from 'cors'
 const app = express();
 const PORT = 5000;
 
@@ -10,6 +11,7 @@ import messageRoutes from "./routers/message.js";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+app.use(cors())
 
 app.use("/users", userRoutes);
 app.use('/password-reset',resetPassword)
