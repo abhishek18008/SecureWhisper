@@ -18,7 +18,17 @@ const Form = () => {
 
   // useEffect(() => {
   //   if (post) setPostData(post);
-  // }, [post]);
+  // }, []);
+
+  const isAuthenticated = useSelector((state) => state.auth.authData.token ?true :false);
+  useEffect(() => {
+    setPostData({
+      title: "",
+      message: "",
+      tags: "",
+      selectedFile: "",
+    });
+  }, [isAuthenticated]);
 
   const clear = () => {
     setPostData({

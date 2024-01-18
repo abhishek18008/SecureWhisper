@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect } from "react";
 import { AppBar, Toolbar, Typography, Button, Avatar } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import whisper from '../images/whisper.svg'
 import { logout } from "../features/authSlice";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+  const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handlelogout = () => {
-    dispatch(logout())
-    navigate('/auth')
+  const isAuthenticated = useSelector((state) => state.auth.authData.token ?true :false);
+
+  useEffect(() => {
+    console.log('Navbar rerendered');
+  }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
@@ -48,7 +55,7 @@ const Navbar = () => {
         />
       </div>
       <Toolbar>
-        {user ? (
+        {isAuthenticated ? (
           <div
             style={{
               display: "flex",
@@ -56,10 +63,7 @@ const Navbar = () => {
               width: "400px",
             }}
           >
-            <Avatar
-              alt={user.result.name}
-              src={user.result.imageUrl}
-            >
+            <Avatar alt={user.result.name} src={user.result.imageUrl}>
               {user.result.name.charAt(0)}
             </Avatar>
             <Typography
@@ -68,7 +72,7 @@ const Navbar = () => {
             >
               {user.result.name}
             </Typography>
-            <Button variant="contained" color="secondary" onClick={handlelogout}>
+            <Button variant="contained" color="secondary" onClick={handleLogout}>
               Logout
             </Button>
           </div>

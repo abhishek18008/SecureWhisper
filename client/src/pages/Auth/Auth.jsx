@@ -6,11 +6,19 @@ import {
   Typography,
   Container,
   Grid,
-  Link,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
-import Input from "./Input.jsx"; // Import your Input component here
-import ForgotPassword from "./ForgotPassword"; // Import the ForgotPassword component
+import Input from "./Input.jsx";
+import ForgotPassword from "./ForgotPassword";
+import { useDispatch } from "react-redux";
+import { login } from "../../features/authSlice.js";
+import * as api from "../../api/index.js";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   name: "",
@@ -24,24 +32,39 @@ const Auth = () => {
   const [form, setForm] = useState(initialState);
   const [isSignup, setIsSignup] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const switchToSignIn = () => {
     setShowForgotPassword(false);
-    // Additional logic if needed when switching to sign-in mode
   };
 
-  const handleShowPassword = () => setShowPassword((pre) => !pre);
+  const handleShowPassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
 
-    if (isSignup) {
-      // Add signup logic here
-    } else {
-      // Add login logic here
+    try {
+      if (isSignup) {
+        const response = await api.jwtsignup(form);
+        setSuccessMessage("Signup successful! Please login with the account created.");
+        setIsSignup(false)
+        setForm(initialState);
+      } else {
+        dispatch(login(form));
+        navigate('/');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Handle validation errors
+        setError(error.response.data.errors.join(", "));
+      } else {
+        console.error(error);
+        setError("An error occurred");
+      }
     }
-    // Additional logic if needed after submission
   };
 
   const handleChange = (e) => {
@@ -52,6 +75,8 @@ const Auth = () => {
     setForm(initialState);
     setIsSignup((prevIsSignup) => !prevIsSignup);
     setShowPassword(false);
+    setError(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -84,7 +109,7 @@ const Auth = () => {
               <Grid container spacing={2}>
                 <Input
                   name="name"
-                  label="name"
+                  label="Name"
                   handleChange={handleChange}
                   autoFocus
                   xs={6}
@@ -135,6 +160,30 @@ const Auth = () => {
           </form>
         )}
       </Paper>
+
+      <Dialog open={!!error} onClose={() => setError(null)}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{error}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setError(null)} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={!!successMessage} onClose={() => setSuccessMessage(null)}>
+        <DialogTitle>Success</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{successMessage}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSuccessMessage(null)} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
