@@ -2,10 +2,11 @@
 
 <h2>🛠️ Installation Steps:</h2>
 
-<p>1. clone repo</p>
+<p>1. clone repo and go to rep</p>
 
 ```
 git clone https://github.com/abhishek18008/SecureWhisper
+cd SecureWhisper
 ```
 
 <p>2. change directory to server</p>
